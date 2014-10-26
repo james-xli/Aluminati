@@ -2,6 +2,7 @@
 task main()
 {
 	int num;
-	while (1=1)
+	while (1==1)
 		num++;
+	return num;
 }
