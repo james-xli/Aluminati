@@ -1,0 +1,23 @@
+
+	
+	AUTONOMOUS PROGRAM HOORAY
+
+	robot starts in corner
+
+	check if IR is getting a signal
+		if yes, skip to below
+		if no: turn left 45 degrees, 
+	then drive forward until IR gets a signal or sonar <= 40cm
+
+	while IR is getting a signal:
+		if IR = 5, drive forward
+		if IR < 5, turn left
+		if IR > 5, turn right
+
+	repeat above sequence until sonar <= 40cm 
+	(test this value, may be less or more)
+	check if IR=5
+		if IR isn't 5, drive backwards, then repeat entire sequence
+		if IR = 5, put ring on
+			arm for x seconds (to 90 degrees)
+			drive forwards
