@@ -10,9 +10,9 @@
 
 // Constants
 #define FORWARD	1
-#define RIGHT		2
-#define BACK		3
-#define LEFT		4
+#define RIGHT	2
+#define BACK	3
+#define LEFT	4
 
 #define ROTATE_LEFT		1
 #define ROTATE_RIGHT	2
@@ -26,9 +26,115 @@ task main() {
 	}
 }
 
+// Given a point within the Cartesian coordinate system, this function will calculate the motor power based upon the distance from the origin to the given point.
+int getPower(int x, int y) {
+	// x and y must be within [-100, 100]
+	int power;
+	power = sqrt(x^2 + y^2);
+	if (power > 100) {
+		power = 100;
+	} else if (power < -100) {
+		pwoer = -100;
+	}
+	return power;
+}
+
+// Given a point within the Cartesian coordinate system, this function will calculate the angle, in standard position, from the origin to the given point.
+int getAngle(int x, int y) {
+	int angle		= 0;
+	int refAngle	= 0;
+	//int quadrant	= 0;
+
+	/*
+	// Find Quadrant
+	if (x < 0) {
+		if (y < 0) {
+			quadrant = 3;
+		} else if (y > 0) {
+			quadrant = 2;
+		}
+	} else if (x > 0) {
+		if (y < 0) {
+			quadrant = 4;
+		} else if (y > 0) {
+			quadrant  = 1;
+		}
+	}
+	*/
+
+	// Find angle in Standard Position
+	if (x != 0 && y != 0) { // Exclude any Quadrantal Angles
+		// Find Reference Angle
+		refAngle = atan(y/x);
+
+		// Find Angle in Standard Position
+		if (x < 0) { // Quadrant II or III
+			angle = 180 + refAngle;
+		} else if (x > 0) { // Quadrant IV or I
+			angle = 360 + refAngle;
+		}
+
+		// Ensure angle is within bounds: [0, 360)
+		while (angle >= 360) {
+			angle = angle - 360;
+		}
+		while (angle < 0) {
+			angle = angle + 360;
+		}
+	}
+	// Old Algorithm
+	/*
+	if (x != 0 && y != 0) { // Exclude any Quadrantal Angles
+		// Find Reference Angle
+		refAngle = atan(y/x);
+
+		// Find Angle in Standard Position
+		if (x < 0) { // Quadrant II or III
+			if (refAngle < 0) { // Quadrant II or IV therefore Quadrant II
+				angle = 180 + refAngle;
+			} else if (refAngle > 0) { // Quadrant I or III therefore Quadrant III
+				angle = 180 + refAngle;
+			}
+		} else if (x > 0) { // Quadrant IV or I
+			if (refAngle < 0) { // Quadrant II or IV therefore Quadrant IV
+				angle = 360 + refAngle;
+			} else if (refAngle > 0) { // Quadrant I or III therefore Quadrant I
+				angle = refAngle;
+			}
+		}
+	}
+	*/
+
+	// Quadrantal Angles
+	if (x == 0) {
+		if (y == 0) {
+			angle = 0; // Default to 0 degrees if point == origin
+		} else if (y < 0) {
+			angle = 270;
+		} else if (y > 0) {
+			angle = 90;
+		}
+	} else if (y == 0) {
+		if (x < 0) {
+			angle = 180;
+		} else if (x > 0) {
+			angle = 0;
+		}
+	}
+
+	// TODO
+	//else {
+  //	writeDebugStreamLine("ERROR: Invalid value for 'x'. Value must be an integer within the bounds: [-100,100].");
+	//}
+	return angle;
+}
+
 void holoDrive(int joy1_x, int joy1_y, int joy2_x, int joy2_y) {
 	// Joystick input must be within {-100 - 100}
 
+	// Movement
+
+	// Rotation
 }
 
 /*
