@@ -10,6 +10,7 @@ task main() {
 		getJoystickSettings(joystick); // Update joystick
 		if (joy1Btn(4)) {
 			writeDebugStreamLine("Button 4 Pressed");
+			PlayTone(659,   34);
 		}
 		if (joy1Btn(2)) {
 			writeDebugStreamLine("Button 2 Pressed");
