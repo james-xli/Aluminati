@@ -42,23 +42,6 @@ float getAngle(float x, float y) {
 	float refAngle	= 0;
 	//int quadrant	= 0;
 
-	/*
-	// Find Quadrant
-	if (x < 0) {
-		if (y < 0) {
-			quadrant = 3;
-		} else if (y > 0) {
-			quadrant = 2;
-		}
-	} else if (x > 0) {
-		if (y < 0) {
-			quadrant = 4;
-		} else if (y > 0) {
-			quadrant  = 1;
-		}
-	}
-	*/
-
 	// Find angle in Standard Position
 	if (x != 0 && y != 0) { // Exclude any Quadrantal Angles
 		// Find Reference Angle
@@ -74,6 +57,24 @@ float getAngle(float x, float y) {
 		// Ensure angle is within bounds: [0, 360)
 		angle = modAngle(angle);
 	}
+
+	// Quadrantal Angles
+	if (x == 0) {
+		if (y == 0) {
+			angle = 0; // Default to 0 degrees if point == origin
+		} else if (y < 0) {
+			angle = 270;
+		} else if (y > 0) {
+			angle = 90;
+		}
+	} else if (y == 0) {
+		if (x < 0) {
+			angle = 180;
+		} else if (x > 0) {
+			angle = 0;
+		}
+	}
+
 	// Old Algorithm
 	/*
 	if (x != 0 && y != 0) { // Exclude any Quadrantal Angles
@@ -95,24 +96,22 @@ float getAngle(float x, float y) {
 			}
 		}
 	}
-	*/
 
-	// Quadrantal Angles
-	if (x == 0) {
-		if (y == 0) {
-			angle = 0; // Default to 0 degrees if point == origin
-		} else if (y < 0) {
-			angle = 270;
+	// Find Quadrant
+	if (x < 0) {
+		if (y < 0) {
+			quadrant = 3;
 		} else if (y > 0) {
-			angle = 90;
+			quadrant = 2;
 		}
-	} else if (y == 0) {
-		if (x < 0) {
-			angle = 180;
-		} else if (x > 0) {
-			angle = 0;
+	} else if (x > 0) {
+		if (y < 0) {
+			quadrant = 4;
+		} else if (y > 0) {
+			quadrant  = 1;
 		}
 	}
+	*/
 
 	// TODO
 	//else {
@@ -159,7 +158,7 @@ float getPower(float x, float y) {
 	return power/100;
 }
 
-float getMotorPower(float power, float direction, int wheelOri) {
+float getMotorPower(float direction, int wheelOri) {
 	float finPower;
 	float tempDir;
 
@@ -174,17 +173,22 @@ float getMotorPower(float power, float direction, int wheelOri) {
 		finPower = -finPower;
 	}
 
-	finPower = finPower*power;
-
 	return finPower;
 }
 
-void holoDrive(int joy1_x, int joy1_y, int joy2_x, int joy2_y) {
+void holoMove(int x, int y) {
 	// Joystick input must be within {-100 - 100}
+	int leftOriWheel;
+	int rightOriWheel;
 
 	// Movement
+	leftOriWheel	= getMotorPower(getAngle(x, y), LEFT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
+	rightOriWheel	= getMotorPower(getAngle(x, y), RIGHT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 
-	// Rotation
+	motor[FLWheel] = (rightOriWheel/100)*FULL_MOTOR_POWER;
+	motor[FRWheel] = (leftOriWheel/100)*FULL_MOTOR_POWER;
+	motor[BLWheel] = (leftOriWheel/100)*FULL_MOTOR_POWER;
+	motor[BRWheel] = (rightOriWheel/100)*FULL_MOTOR_POWER;
 }
 
 /*
@@ -234,19 +238,15 @@ task main() {
 		wait1Msec(LOOP_INTERVAL);
 		getJoystickSettings(joystick);
 
-		//writeDebugStreamLine("Looop");
-		//writeDebugStreamLine("%d", joy1_x1);
-		/*
-		if (joystick.joy1_x1 > 50) {
-			writeDebugStreamLine("JOY");
-		}
-		*/
+		holoMove(DEADBAND(joystick.joy1_x1), DEADBAND(joystick.joy1_y1));
+
+		// Test Code to test if Joystick Controller input is working
 		if (joy1Btn(4)) {
 			writeDebugStreamLine("JOY4BUTTON");
 		}
 
 		// TEST CODE
-		writeDebugStreamLine("%f", getMotorPower(getPower(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))), getAngle(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))), RIGHT_ORIENTATION_HOLO_WHEEL));
+		//writeDebugStreamLine("%f", getPower(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))) * getMotorPower(getAngle(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))), RIGHT_ORIENTATION_HOLO_WHEEL));
 		//writeDebugStreamLine("%d", joystick.joy1_y1);
 		//writeDebugStreamLine("%f", getRefAngle(getAngle(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))));
 		//writeDebugStreamLine("%f", getPower(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))));
