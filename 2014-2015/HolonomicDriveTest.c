@@ -176,7 +176,7 @@ float getMotorPower(float direction, int wheelOri) {
 	return finPower;
 }
 
-void holoMove(int x, int y) {
+void holoMove(float x, float y) {
 	// Joystick input must be within {-100 - 100}
 	int leftOriWheel;
 	int rightOriWheel;
@@ -189,6 +189,21 @@ void holoMove(int x, int y) {
 	motor[FRWheel] = (leftOriWheel/100)*FULL_MOTOR_POWER;
 	motor[BLWheel] = (leftOriWheel/100)*FULL_MOTOR_POWER;
 	motor[BRWheel] = (rightOriWheel/100)*FULL_MOTOR_POWER;
+}
+
+void holoRotate(float x) {
+	float power = x/100
+	if (x < 0) {
+		motor[FLWheel] = -1 * power * FULL_MOTOR_POWER;
+		motor[FRWheel] = 1  * power * FULL_MOTOR_POWER;
+		motor[BLWheel] = -1 * power * FULL_MOTOR_POWER;
+		motor[BRWheel] = 1  * power * FULL_MOTOR_POWER;
+	} else if (x > 0) {
+		motor[FLWheel] = 1  * power * FULL_MOTOR_POWER;
+		motor[FRWheel] = -1 * power * FULL_MOTOR_POWER;
+		motor[BLWheel] = 1  * power * FULL_MOTOR_POWER;
+		motor[BRWheel] = -1 * power * FULL_MOTOR_POWER;
+	}
 }
 
 /*
@@ -228,17 +243,13 @@ void simpleHoloMove(int movement) {
 	}
 }
 
-void simpleHoloRotate(int rotation) {
-	// Rotation input must be: {1, 2} corresponding to {rotateLeft, rotateRight}
-
-}
-
 task main() {
 	while (true) {
 		wait1Msec(LOOP_INTERVAL);
 		getJoystickSettings(joystick);
 
-		holoMove(DEADBAND(joystick.joy1_x1), DEADBAND(joystick.joy1_y1));
+		holoMove(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1));
+		//holoRotate(remapJoystickInput(DEADBAND(joystick.joy2_)));
 
 		// Test Code to test if Joystick Controller input is working
 		if (joy1Btn(4)) {
