@@ -36,6 +36,7 @@ float modAngle(float angle) {
 	return angle;
 }
 
+
 // Given a point within the Cartesian coordinate system, this function will calculate the angle, in standard position, from the origin to the given point.
 float getAngle(float x, float y) {
 	float angle	= 0;
@@ -250,6 +251,7 @@ task main() {
 		// Test Code to test if Joystick Controller input is working
 		if (joy1Btn(4)) {
 			writeDebugStreamLine("JOY4BUTTON");
+			//MissionImpossible();
 		}
 
 		// TEST CODE
