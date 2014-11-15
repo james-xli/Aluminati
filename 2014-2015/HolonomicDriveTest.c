@@ -186,7 +186,8 @@ void holoMove(float x, float y) {
 	leftOriWheel	= getMotorPower(getAngle(x, y), LEFT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 	rightOriWheel	= getMotorPower(getAngle(x, y), RIGHT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 
-	//writeDebugStreamLine("left: %d", (int) ((leftOriWheel/100)*FULL_MOTOR_POWER));
+	writeDebugStreamLine("left: %d", (int) ((leftOriWheel/100)*FULL_MOTOR_POWER));
+	writeDebugStreamLine("right: %d", (int) ((rightOriWheel/100)*FULL_MOTOR_POWER));
 
 	motor[FLWheel] = (int) ((rightOriWheel/100)*FULL_MOTOR_POWER);
 	motor[FRWheel] = (int) ((leftOriWheel/100)*FULL_MOTOR_POWER);
