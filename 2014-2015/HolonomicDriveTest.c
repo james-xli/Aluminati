@@ -17,7 +17,7 @@
 #define ROTATE_LEFT		1
 #define ROTATE_RIGHT	2
 
-#define FULL_MOTOR_POWER 50
+#define FULL_MOTOR_POWER 90
 
 #define LEFT_ORIENTATION_HOLO_WHEEL		1
 #define RIGHT_ORIENTATION_HOLO_WHEEL	2
@@ -186,8 +186,8 @@ void holoMove(float x, float y) {
 	leftOriWheel	= getMotorPower(getAngle(x, y), LEFT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 	rightOriWheel	= getMotorPower(getAngle(x, y), RIGHT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 
-	writeDebugStreamLine("left: %d", (int) ((leftOriWheel/100)*FULL_MOTOR_POWER));
-	writeDebugStreamLine("right: %d", (int) ((rightOriWheel/100)*FULL_MOTOR_POWER));
+	//writeDebugStreamLine("left: %d", (int) ((leftOriWheel/100)*FULL_MOTOR_POWER));
+	//writeDebugStreamLine("right: %d", (int) ((rightOriWheel/100)*FULL_MOTOR_POWER));
 
 	motor[FLWheel] = (int) ((rightOriWheel/100)*FULL_MOTOR_POWER);
 	motor[FRWheel] = (int) ((leftOriWheel/100)*FULL_MOTOR_POWER);
@@ -196,11 +196,13 @@ void holoMove(float x, float y) {
 }
 
 void holoRotate(float x) {
-	float power = x/100;
-	motor[FLWheel] = -1 * power * FULL_MOTOR_POWER;
-	motor[FRWheel] = 1  * power * FULL_MOTOR_POWER;
-	motor[BLWheel] = -1 * power * FULL_MOTOR_POWER;
-	motor[BRWheel] = 1  * power * FULL_MOTOR_POWER;
+	if (x != 0) {
+		float power = x/100;
+		motor[FLWheel] = -1 * power * FULL_MOTOR_POWER;
+		motor[FRWheel] = 1  * power * FULL_MOTOR_POWER;
+		motor[BLWheel] = -1 * power * FULL_MOTOR_POWER;
+		motor[BRWheel] = 1  * power * FULL_MOTOR_POWER;
+	}
 }
 
 /*
@@ -241,9 +243,11 @@ void simpleHoloMove(int movement) {
 }
 
 task main() {
+	//motor[FRWheel] = 90;
 	while (true) {
 		wait1Msec(LOOP_INTERVAL);
 		getJoystickSettings(joystick);
+
 
 		holoMove(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1)));
 		holoRotate(remapJoystickInput(DEADBAND(joystick.joy1_x2)));
