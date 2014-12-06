@@ -1,0 +1,36 @@
+===========================================
+GYRO DRIVE PSEUDOCODE -- BASED ON JAMESHOLO
+-------------------------------------------
+(((((((((which may or may not work)))))))))
+===========================================
+
+motors and sensors setup ...
+
+#include "joystickdriver.c"
+
+int currentHeading; //current heading from zero of robot
+int xPowerMod, yPowerMod; // amounts by which to modify x and y powers
+
+#deadband ...
+#single_bound_wheel ...
+
+void updateHeading()
+	add current rate of angular change to currentHeading
+
+int getCurrentHeading()
+	return currentHeading
+
+void driveMod()
+	use getCurrentHeading()
+	calculate change in x and y to apply, based on currentHeading
+		use tanx?
+		not super sure exactly how this would look -- maybe subtract a percentage of the current x/y/zPower? or just subtract? or just take a percentage?
+
+void drive()
+	same as in jamesHolo, but apply xPowerMod and yPowerMod
+	this is all assuming jamesHolo works
+
+task main ()
+	updateHeading();
+	getJoystickSettings();
+	drive();
