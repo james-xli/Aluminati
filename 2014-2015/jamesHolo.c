@@ -26,9 +26,9 @@ void drive(int x, int y, int r)
 
 	int xPower, yPower, rPower, FLPower, BLPower, BRPower, FRPower;
 
-	xPower = k 	* DEADBAND(x);
-	yPower = k 	* DEADBAND(y);
-	rPower = kR	* DEADBAND(r);
+	xPower = k 	* SINGLE_BOUND_WHEEL(DEADBAND(x));
+	yPower = k 	* SINGLE_BOUND_WHEEL(DEADBAND(y));
+	rPower = kR	* SINGLE_BOUND_WHEEL(DEADBAND(r));
 
 	FLPower = SINGLE_BOUND_WHEEL(		xPower	+	yPower	+	rPower);
 	BLPower = SINGLE_BOUND_WHEEL( -	xPower 	+	yPower	+	rPower);
