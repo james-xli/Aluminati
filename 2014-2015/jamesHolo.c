@@ -19,10 +19,12 @@
 #define DEADBAND(x) ((abs(x) >= 10)? x: 0)
 #define SINGLE_BOUND_WHEEL(x) (((x) > 100)? 100: ((x) < -100)? -100: (x))
 
+bool cruiseControl = false;
+
 void drive(int x, int y, int r)
 {
 	float k = 1.0;
-	float kR = 1.0;
+	float kR = .8;
 
 	int xPower, yPower, rPower, FLPower, BLPower, BRPower, FRPower;
 
@@ -48,5 +50,16 @@ task main()
 		getJoystickSettings(joystick);
 
 		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2);
+
+		if (joy1Btn(8))
+		{
+			if (cruiseControl == false)
+				cruiseControl = true;
+			else
+				cruiseControl = false;
+		}
+
+		while (cruiseControl == true)
+			wait1Msec(1); // Locks in current joystick inputs (cruise control!)
 	}
 }
