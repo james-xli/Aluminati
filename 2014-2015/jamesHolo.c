@@ -49,8 +49,6 @@ task main()
 	{
 		getJoystickSettings(joystick);
 
-		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2);
-
 		if (joy1Btn(8))
 		{
 			if (cruiseControl == false)
@@ -59,7 +57,9 @@ task main()
 				cruiseControl = false;
 		}
 
-		while (cruiseControl == true)
+		if (cruiseControl == true)
 			wait1Msec(1); // Locks in current joystick inputs (cruise control!)
+		else
+			drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2);
 	}
 }
