@@ -17,10 +17,7 @@
 #include "JoystickDriver.c"
 
 #define DEADBAND(x) ((abs(x) >= 10)? x: 0)
-//#define SINGLE_BOUND_WHEEL(x) (((x) > 100)? 100: ((x) < -100)? -100: (x))
 #define SINGLE_BOUND_WHEEL(x) ((x / 127) * 100)
-
-bool cruiseControl = false;
 
 void drive(int x, int y, int r)
 {
@@ -49,18 +46,6 @@ task main()
 	while(true)
 	{
 		getJoystickSettings(joystick);
-
-		if (joy1Btn(8)) // turn cruise control on or off
-		{
-			if (cruiseControl == false)
-				cruiseControl = true;
-			else
-				cruiseControl = false;
-		}
-
-		if (cruiseControl == true)
-			wait1Msec(1); // Lock current joystick inputs (cruise control!)
-		else
-			drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2); // normal drive
+		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2); // normal drive
 	}
 }
