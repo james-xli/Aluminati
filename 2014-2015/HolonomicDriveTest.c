@@ -8,7 +8,15 @@
 
 #include "JoystickDriver.c"
 
-// Preprocessor defined constants and functions
+// Constants
+#define FORWARD	1
+#define RIGHT	2
+#define BACK	3
+#define LEFT	4
+
+#define ROTATE_LEFT		1
+#define ROTATE_RIGHT	2
+
 #define FULL_MOTOR_POWER 90
 
 #define LEFT_ORIENTATION_HOLO_WHEEL		1
@@ -105,6 +113,11 @@ float getAngle(float x, float y) {
 		}
 	}
 	*/
+
+	// TODO
+	//else {
+  //	writeDebugStreamLine("ERROR: Invalid value for 'x'. Value must be an integer within the bounds: [-100,100].");
+	//}
 	return angle;
 }
 
@@ -129,7 +142,7 @@ float getRefAngle(float angle) {
 	return refAngle;
 }
 
-float remapJoystickInput(int joy) { // Remaps Joystick input [-128, 127] to [-100, 100]
+float remapJoystickInput(float joy) { // Remaps Joystick input [-128, 127] to [-100, 100]
 	return (joy/128)*100;
 }
 
@@ -164,7 +177,7 @@ float getMotorPower(float direction, int wheelOri) {
 	return finPower;
 }
 
-void holoMove(float x, float y, float rotateX) {
+void holoMove(float x, float y) {
 	// Joystick input must be within {-100 - 100}
 	float leftOriWheel;
 	float rightOriWheel;
@@ -173,10 +186,13 @@ void holoMove(float x, float y, float rotateX) {
 	leftOriWheel	= getMotorPower(getAngle(x, y), LEFT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 	rightOriWheel	= getMotorPower(getAngle(x, y), RIGHT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
 
-	motor[FLWheel] = (int) (((((rightOriWheel/100)*FULL_MOTOR_POWER)	+	rotateX)/200)*100);
-	motor[FRWheel] = (int) (((((leftOriWheel/100)*FULL_MOTOR_POWER)		+	-rotateX)/200)*100);
-	motor[BLWheel] = (int) (((((leftOriWheel/100)*FULL_MOTOR_POWER)		+	rotateX)/200)*100);
-	motor[BRWheel] = (int) (((((rightOriWheel/100)*FULL_MOTOR_POWER)	+	-rotateX)/200)*100);
+	//writeDebugStreamLine("left: %d", (int) ((leftOriWheel/100)*FULL_MOTOR_POWER));
+	//writeDebugStreamLine("right: %d", (int) ((rightOriWheel/100)*FULL_MOTOR_POWER));
+
+	motor[FLWheel] = (int) ((rightOriWheel/100)*FULL_MOTOR_POWER);
+	motor[FRWheel] = (int) ((leftOriWheel/100)*FULL_MOTOR_POWER);
+	motor[BLWheel] = (int) ((leftOriWheel/100)*FULL_MOTOR_POWER);
+	motor[BRWheel] = (int) ((rightOriWheel/100)*FULL_MOTOR_POWER);
 }
 
 void holoRotate(float x) {
@@ -189,18 +205,65 @@ void holoRotate(float x) {
 	}
 }
 
+/*
+void simpleHoloDrive(int movement, int rotation) {
+	// Movement input must be: {1, 2, 3, 4} corresponding to {forward, right, back, left}
+	// Rotation input must be: {1, 2} corresponding to {rotateLeft, rotateRight}
+}
+*/
+
+void simpleHoloMove(int movement) {
+	// Movement input must be: {1, 2, 3, 4} corresponding to {forward, right, back, left}
+	switch (movement) {
+		case FORWARD:
+			motor[FLWheel] = 1*FULL_MOTOR_POWER;
+			motor[FRWheel] = 1*FULL_MOTOR_POWER;
+			motor[BLWheel] = 1*FULL_MOTOR_POWER;
+			motor[BRWheel] = 1*FULL_MOTOR_POWER;
+			break;
+		case RIGHT:
+			motor[FLWheel] = 1*FULL_MOTOR_POWER;
+			motor[FRWheel] = -1*FULL_MOTOR_POWER;
+			motor[BLWheel] = -1*FULL_MOTOR_POWER;
+			motor[BRWheel] = 1*FULL_MOTOR_POWER;
+			break;
+		case BACK:
+			motor[FLWheel] = -1*FULL_MOTOR_POWER;
+			motor[FRWheel] = -1*FULL_MOTOR_POWER;
+			motor[BLWheel] = -1*FULL_MOTOR_POWER;
+			motor[BRWheel] = -1*FULL_MOTOR_POWER;
+			break;
+		case LEFT:
+			motor[FLWheel] = -1*FULL_MOTOR_POWER;
+			motor[FRWheel] = 1*FULL_MOTOR_POWER;
+			motor[BLWheel] = 1*FULL_MOTOR_POWER;
+			motor[BRWheel] = -1*FULL_MOTOR_POWER;
+			break;
+	}
+}
+
 task main() {
+	//motor[FRWheel] = 90;
 	while (true) {
 		wait1Msec(LOOP_INTERVAL);
 		getJoystickSettings(joystick);
 
-		holoMove(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1)), remapJoystickInput(DEADBAND(joystick.joy1_x2)));
-		//holoRotate(remapJoystickInput(DEADBAND(joystick.joy1_x2)));
+
+		holoMove(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1)));
+		holoRotate(remapJoystickInput(DEADBAND(joystick.joy1_x2)));
+		//holoRotate(remapJoystickInput(DEADBAND(joystick.joy2_)));
 
 		// Test Code to test if Joystick Controller input is working
 		if (joy1Btn(4)) {
 			writeDebugStreamLine("JOY4BUTTON");
 			//MissionImpossible();
 		}
+
+		// TEST CODE
+		//writeDebugStreamLine("%f", getPower(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))) * getMotorPower(getAngle(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))), RIGHT_ORIENTATION_HOLO_WHEEL));
+		//writeDebugStreamLine("%d", joystick.joy1_y1);
+		//writeDebugStreamLine("%f", getRefAngle(getAngle(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))));
+		//writeDebugStreamLine("%f", getPower(remapJoystickInput(DEADBAND(joystick.joy1_x1)), remapJoystickInput(DEADBAND(joystick.joy1_y1))));
+		//writeDebugStreamLine("%f", getAngle(remapJoystickInput(joystick.joy1_x1), remapJoystickInput(joystick.joy1_y1)));
 	}
 }
