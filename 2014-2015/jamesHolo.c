@@ -17,7 +17,11 @@
 #include "JoystickDriver.c"
 
 #define DEADBAND(x) ((abs(x) >= 10)? x: 0)
-#define SINGLE_BOUND_WHEEL(x) ((x / 127) * 100)
+#define SCALE_INPUT(x) (((x) / 128) * 100)
+
+int powerFraction(int x) {
+	return ((x/200)*100);
+}
 
 void drive(int x, int y, int r)
 {
@@ -26,14 +30,17 @@ void drive(int x, int y, int r)
 
 	int xPower, yPower, rPower, FLPower, BLPower, BRPower, FRPower;
 
-	xPower = k 	* SINGLE_BOUND_WHEEL(DEADBAND(x));
-	yPower = k 	* SINGLE_BOUND_WHEEL(DEADBAND(y));
-	rPower = kR	* SINGLE_BOUND_WHEEL(DEADBAND(r));
+	xPower = k 	* SCALE_INPUT(DEADBAND(x));
+	yPower = k 	* SCALE_INPUT(DEADBAND(y));
+	rPower = kR	* SCALE_INPUT(DEADBAND(r));
 
-	FLPower = SINGLE_BOUND_WHEEL(		xPower	+	yPower	+	rPower);
-	BLPower = SINGLE_BOUND_WHEEL( -	xPower 	+	yPower	+	rPower);
-	BRPower = SINGLE_BOUND_WHEEL(		xPower	+	yPower	-	rPower);
-	FRPower = SINGLE_BOUND_WHEEL( -	xPower	+	yPower	-	rPower);
+	if ((xPower + rPower) > 100) {
+
+	}
+	FLPower = scalePower(	xPower	+	yPower	+	rPower);
+	BLPower = scalePower( -	xPower 	+	yPower	+	rPower);
+	BRPower = scalePower(	xPower	+	yPower	-	rPower);
+	FRPower = scalePower( -	xPower	+	yPower	-	rPower);
 
 	motor[FLWheelMotor] = FLPower;
 	motor[BLWheelMotor] = BLPower;
