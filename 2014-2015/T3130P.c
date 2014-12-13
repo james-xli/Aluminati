@@ -1,11 +1,10 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  mtr_S1_C1_1,     FLWheelMotor,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C1_2,     BLWheelMotor,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_1,     BRWheelMotor,  tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_2,     FRWheelMotor,  tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C4_1,     shooterMotor,  tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_2,     armMotor,      tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C4_2,     armMotor,      tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Servo,  srvo_S1_C3_1,    rightHook,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    bigGate,              tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_3,    leftHook,             tServoStandard)
@@ -50,6 +49,7 @@ int irACDirection = HTIRS2readACDir(irSeekerSensor);
 // Class variables
 int bigGateButtonCooldown = 0;
 int smallGateButtonCooldown = 0;
+int shooterCooldown = 0;
 //int rampPosition = 128;
 
 int motorScale(float x)
@@ -58,6 +58,11 @@ int motorScale(float x)
 	if (x > 100)
 		x = 100;
 	return x;
+}
+
+int scaleAndyMarkMotor(int x)
+{
+	return ((x/100) * 78);
 }
 
 void drive(int x, int y, int r)
@@ -178,7 +183,11 @@ void moveRampDown ()
 
 void primeShooter()
 {
-
+	//nMotorEncoder[armMotor] = 0;
+	nMotorEncoderTarget[armMotor] = 1080;
+	motor[armMotor] = scaleAndyMarkMotor(50);
+	while (nMotorRunState[armMotor] != runStateIdle) {} // wait while motor is running
+	motor[armMotor] = 0;
 }
 
 /*
@@ -216,8 +225,14 @@ void close_small (int btn_x)
 }
 */
 
+void initRobot()
+{
+	nMotorEncoder[armMotor] = 0;
+}
+
 task main()
 {
+	initRobot();
 	while(true)
 	{
 		wait1Msec(5); // interval between each main loop
@@ -225,7 +240,15 @@ task main()
 
 		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2); // normal drive
 		arm(joystick.joy2_y1);
-		shooter(joy2Btn(8));
+
+		if (shooterCooldown <= 0) {
+			if (joy2Btn(8)){
+				primeShooter();
+				shooterCooldown = 150;
+			}
+		} else {
+			shooterCooldown--;
+		}
 
 		// Cruise Control
 		/*
