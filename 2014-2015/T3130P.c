@@ -96,7 +96,7 @@ void arm(int x)
 	float k = .4999999999;
 	motor[armMotor] = k * motorScale(x);
 }
-void chompArm() {
+void chompArm() { // needs to be tested - make into separate buttons
 	motor[armMotor] = -50;
 	wait1Msec(250);
 	motor[armMotor] = 50;
@@ -192,6 +192,7 @@ void moveRampDown ()
 	servo[rightRamp] = 256 - ServoValue[leftRamp];
 }
 
+// Needs to be implemented
 void setRamp(int ballSize) {
 	switch (ballSize) {
 		case BIG_BALL:
@@ -203,6 +204,7 @@ void setRamp(int ballSize) {
 	}
 }
 
+// Needs to be tested
 void primeShooter()
 {
 	//nMotorEncoder[armMotor] = 0;
@@ -212,6 +214,7 @@ void primeShooter()
 	motor[shooterMotor] = 0;
 }
 
+// needs to be tested
 void autoShoot()
 {
 	if (SensorValue(bigBall) == 1)
