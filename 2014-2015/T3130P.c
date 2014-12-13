@@ -49,7 +49,8 @@ int irACDirection = HTIRS2readACDir(irSeekerSensor);
 
 // Class variables
 int bigGateButtonCooldown = 0;
-int rampPosition = 128;
+int smallGateButtonCooldown = 0;
+//int rampPosition = 128;
 
 int motorScale(float x)
 {
@@ -151,38 +152,33 @@ void servo_down (int btn_x)
 
 void openBigGate ()
 {
-	if (bigGateButtonCooldown <= 0) {
-		servo[bigGate] = 175;
-		wait1Msec(260);
-		servo[bigGate] = 225;
-		bigGateButtonCooldown = 100;
-	} else {
-		bigGateButtonCooldown--;
-	}
+	servo[bigGate] = 175;
+	wait1Msec(260);
+	servo[bigGate] = 225;
 }
 
 void openSmallGate ()
 {
-	if (bigGateButtonCooldown <= 0) {
-		servo[smallGate] = 60;
-		wait1Msec(150);
-		servo[smallGate] = 20;
-		bigGateButtonCooldown = 100;
-	} else {
-		bigGateButtonCooldown--;
-	}
+	servo[smallGate] = 60;
+	wait1Msec(150);
+	servo[smallGate] = 20;
 }
 
 void moveRampUp ()
 {
-	servo[leftRamp] = servoValue[leftRamp] + 2;
-	servo[rightRamp] = 256 - servoValue[leftRamp];
+	servo[leftRamp] = ServoValue[leftRamp] + 2;
+	servo[rightRamp] = 256 - ServoValue[leftRamp];
 }
 
 void moveRampDown ()
 {
-	servo[leftRamp] = servoValue[leftRamp] - 2;
-	servo[rightRamp] = 256 - servoValue[leftRamp];
+	servo[leftRamp] = ServoValue[leftRamp] - 2;
+	servo[rightRamp] = 256 - ServoValue[leftRamp];
+}
+
+void primeShooter()
+{
+
 }
 
 /*
@@ -252,11 +248,23 @@ task main()
 		servo_down(joy2Btn(1)); //lower hook
 
 		// Gate
-		if (joy2Btn(3))
-			openBigGate();
-		if (joy2Btn(2))
-			openSmallGate();
+		if (bigGateButtonCooldown <= 0) {
+			if (joy2Btn(3)) {
+				openBigGate();
+				bigGateButtonCooldown = 150;
+			}
+		} else {
+			bigGateButtonCooldown--;
+		}
 
+		if (smallGateButtonCooldown <= 0) {
+			if (joy2Btn(2)) {
+				openSmallGate();
+				smallGateButtonCooldown = 150;
+			}
+		} else {
+			smallGateButtonCooldown--;
+		}
 		/*
 		{
       if(SensorValue(light_big) > 40)  					// If the big ball (right side) Light Sensor reads a value less than 40:
