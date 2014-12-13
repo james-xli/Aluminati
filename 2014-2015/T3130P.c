@@ -1,10 +1,11 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  mtr_S1_C1_1,     FLWheelMotor,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C1_2,     BLWheelMotor,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_1,     BRWheelMotor,  tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_2,     FRWheelMotor,  tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C4_1,     shooterMotor,  tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_2,     armMotor,      tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C4_1,     shooterMotor,  tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C4_2,     armMotor,      tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C3_1,    rightHook,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    bigGate,              tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_3,    leftHook,             tServoStandard)
@@ -45,11 +46,14 @@ int irACDirection = HTIRS2readACDir(irSeekerSensor);
 // Constants
 #define DEADBAND(x) ((abs(x) >= 10)? x: 0)
 #define WAIT_TIME 5
+#define BIG_BALL 1
+#define SMALL_BALL 2
 
 // Class variables
 int bigGateButtonCooldown = 0;
 int smallGateButtonCooldown = 0;
 int shooterCooldown = 0;
+int armCooldown = 0;
 //int rampPosition = 128;
 
 int motorScale(float x)
@@ -91,6 +95,13 @@ void arm(int x)
 {
 	float k = .4999999999;
 	motor[armMotor] = k * motorScale(x);
+}
+void chompArm() {
+	motor[armMotor] = -50;
+	wait1Msec(250);
+	motor[armMotor] = 50;
+	wait1Msec(250);
+	motor[armMotor] = 0;
 }
 
 void shooter(int x)
@@ -181,49 +192,45 @@ void moveRampDown ()
 	servo[rightRamp] = 256 - ServoValue[leftRamp];
 }
 
+void setRamp(int ballSize) {
+	switch (ballSize) {
+		case BIG_BALL:
+			// SET RAMP ADJUSTMENT TO BIG BALL MODE
+			break;
+		case SMALL_BALL:
+			// SET RAMP ADJUSTMENT TO SMALL BALL MODE
+			break;
+	}
+}
+
 void primeShooter()
 {
 	//nMotorEncoder[armMotor] = 0;
-	nMotorEncoderTarget[armMotor] = 1080;
-	motor[armMotor] = scaleAndyMarkMotor(50);
-	while (nMotorRunState[armMotor] != runStateIdle) {} // wait while motor is running
-	motor[armMotor] = 0;
+	nMotorEncoderTarget[shooterMotor] = 1080;
+	motor[shooterMotor] = scaleAndyMarkMotor(50);
+	while (nMotorRunState[shooterMotor] != runStateIdle) {} // wait while motor is running
+	motor[shooterMotor] = 0;
 }
 
-/*
-int big_open = 200;
-void open_big (int btn_x)
+void autoShoot()
 {
-	if (btn_x == 1)
+	if (SensorValue(bigBall) == 1)
 	{
-		servo[bigGate] = big_open;
+		setRamp(BIG_BALL);
+		openBigGate();
+		wait1Msec(10);
+		primeShooter();
+		wait1Msec(1000);
+	}
+	else if (SensorValue(smallBall) == 1)
+	{
+		setRamp(SMALL_BALL);
+		openSmallGate();
+		wait1Msec(10);
+		primeShooter();
+		wait1Msec(1000);
 	}
 }
-int big_close = 120;
-void close_big (int btn_x)
-{
-	if (btn_x == 1)
-	{
-		servo[bigGate] = big_close;
-	}
-}
-int small_open = 75;
-void open_small (int btn_x)
-{
-	if (btn_x == 1)
-	{
-		servo[smallGate] = small_open;
-	}
-}
-int small_close = 128;
-void close_small (int btn_x)
-{
-	if (btn_x == 1)
-	{
-		servo[smallGate] = small_close;
-	}
-}
-*/
 
 void initRobot()
 {
@@ -239,7 +246,16 @@ task main()
 		getJoystickSettings(joystick);
 
 		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2); // normal drive
-		arm(joystick.joy2_y1);
+
+		if (armCooldown <= 0) {
+			if (joy1Btn(8)){
+				chompArm();
+				armCooldown = 75;
+			}
+		} else {
+			armCooldown--;
+		}
+		//arm(joystick.joy2_y1);
 
 		if (shooterCooldown <= 0) {
 			if (joy2Btn(8)){
@@ -249,6 +265,8 @@ task main()
 		} else {
 			shooterCooldown--;
 		}
+
+		// Autoshoot
 
 		// Cruise Control
 		/*
