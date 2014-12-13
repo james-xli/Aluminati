@@ -173,20 +173,16 @@ void openSmallGate ()
 	}
 }
 
-void moveRampUp (int x)
+void moveRampUp ()
 {
-	while (x == 1)
-		rampPosition += 2;
-	servo[leftRamp] = rampPosition;
-	servo[rightRamp] = 256 - rampPosition;
+	servo[leftRamp] = servoValue[leftRamp] + 2;
+	servo[rightRamp] = 256 - servoValue[leftRamp];
 }
 
-void moveRampDown (int x)
+void moveRampDown ()
 {
-	while (x == 1)
-		rampPosition -= 2;
-	servo[leftRamp] = rampPosition;
-	servo[rightRamp] = 256 - rampPosition;
+	servo[leftRamp] = servoValue[leftRamp] - 2;
+	servo[rightRamp] = 256 - servoValue[leftRamp];
 }
 
 /*
@@ -228,13 +224,14 @@ task main()
 {
 	while(true)
 	{
-		wait1Msec(5);
+		wait1Msec(5); // interval between each main loop
 		getJoystickSettings(joystick);
+
 		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2); // normal drive
 		arm(joystick.joy2_y1);
 		shooter(joy2Btn(8));
-		moveRampUp(joy2Btn(6));
-		moveRampDown(joy2btn(5));
+
+		// Cruise Control
 		/*
 		while (joy1Btn(8)) // cruise control
 		{
@@ -243,24 +240,22 @@ task main()
 			wait1Msec(1);
 		}
 		*/
-		/*
-		ramp_in(joy1Btn(2));
-		ramp_middle(joy1Btn(3));
-		ramp_out(joy1Btn(4));
-		*/
+
+		// Ramp
+		if (joy2Btn(6))
+			moveRampUp();
+		if (joy2Btn(5))
+			moveRampDown();
+
+		// Hook
 		servo_up(joy2Btn(4)); //raise hook
 		servo_down(joy2Btn(1)); //lower hook
-		//writeDebugStreamLine("%d", ServoValue[bigGate]);
+
+		// Gate
 		if (joy2Btn(3))
 			openBigGate();
 		if (joy2Btn(2))
 			openSmallGate();
-		/*
-		open_big(joy1Btn(6));
-		close_big(joy1Btn(8));
-		open_small(joy1Btn(5));
-		close_small(joy1Btn(7));
-		*/
 
 		/*
 		{
@@ -285,5 +280,5 @@ task main()
 			}
 }
 */
-}
+	}
 }
