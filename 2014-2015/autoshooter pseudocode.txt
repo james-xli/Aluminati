@@ -1,0 +1,82 @@
+======================
+AUTOSHOOTER PSEUDOCODE
+======================
+
+motors and sensors setup ...
+
+joystickdriver.c
+sensor multiplexer drivers and setup
+
+bool hasSmallBall = false;
+bool hasLargeBall = false;
+
+int tubeSize;	// 1, 2, 3, or 4 denotes which tube
+
+static const int RAMP_BIG_1 = ??;	// set ramp position for this ball and tube
+// repeat constant initialization for all eight ball/tube combinations
+
+int rampPosition;
+
+void drive(int x, int y, int r)
+
+void checkBalls()
+{
+	if small ball light sensor input is greater than x value
+		hasSmallBall = true;
+	else
+		hasSmallBall = false;
+	if large ball light sensor input is greater than x value
+		hasLargeBall = true;
+	else
+		hasLargeBall = false;
+}
+
+int oppositeServo(int x)	// calculates opposite servo value, given one side
+
+int oppositeServoRamp(int x)	// calculates opposite servo value + offset for ramp
+
+void setRamp()	// sets ramp angle, given tubeSize and ball status
+{
+	if (tubeSize == 1)
+		if (hasSmallBall == true && hasLargeBall == false) // prioritize big balls
+			rampPosition = RAMP_SMALL_1;	// set rampPosition
+		else
+			rampPosition = RAMP_LARGE_1;
+	if (tubeSize == 2) 	// repeat for all tube sizes
+	set ramp servo to rampPosition
+	set other ramp servo to oppositeServoRamp(rampPosition)
+}
+
+void largeGate()	// release one large ball
+
+void smallGate()	// release one small ball
+
+void shootOne()		// shoots one ball
+
+void autoShoot()
+{
+	drive (0, 0, 0);	// stop wheel motors
+	checkBalls();
+	setRamp();
+	if (hasLargeBall == true)
+		largeGate();
+		wait ... 
+		shootOne();
+		wait ... 
+	else if (hasSmallBall == true)
+		smallGate();
+		wait ... 
+		shootOne();
+		wait ...
+}
+
+task main()
+{
+	getJoystickSettings();
+	drive( ... );
+	if (joy1Btn(1) == 1); // set tube size
+		tubeSize = 1; // repeat for 2, 3, and 4
+	while (joy2Btn(8) == 1)
+		autoShoot();
+	
+}

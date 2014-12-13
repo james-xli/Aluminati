@@ -1,7 +1,5 @@
 ===========================================
 GYRO DRIVE PSEUDOCODE -- BASED ON JAMESHOLO
--------------------------------------------
-(((((((((which may or may not work)))))))))
 ===========================================
 
 motors and sensors setup ...
