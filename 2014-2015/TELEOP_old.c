@@ -20,9 +20,12 @@
 
 #define DEADBAND(x) ((abs(x) >= 10)? x: 0)
 
+int bigGateButtonCooldown = 0;
+
 void initializeRobot()
 {
-
+	servo[smallGate] = 20;
+	servo[bigGate] = 225;
 }
 
 int motorScale(float x)
@@ -55,22 +58,47 @@ void drive(int x, int y, int r)
 	motor[FRWheelMotor] = FRPower;
 }
 
-void raiseFeet()
+void moveArm(int x, int y)
+{
+	motor[armMotor] = 50 * (x - y);
+}
+
+
+void servo_up (int btn_x)
 {
 	int hookUpRight = 150;	// smaller value is more up
 	int hookUp = 250 - hookUpRight;
 
-	servo[leftHook] = hookUp;
-	servo[rightHook] = hookUpRight;
+	if (btn_x == 1)
+	{
+		servo[leftHook] = hookUp;
+		servo[rightHook] = hookUpRight;
+	}
 }
 
-void dropFeet()
+void servo_down (int btn_x)
 {
 	int HookDownRight = 245; // greater value is more down
 	int HookDown = 253 - HookDownRight;
 
-	servo[leftHook] = HookDown;
-	servo[rightHook] = HookDownRight;
+	if (btn_x == 1)
+	{
+		servo[leftHook] = HookDown;
+		servo[rightHook] = HookDownRight;
+	}
+}
+
+void openBigGate ()
+{
+	servo[bigGate] = 175;
+	wait1Msec(260);
+	servo[bigGate] = 225;
+}
+
+void shooter(int x)
+{
+	int k = 100;
+	motor[shooterMotor] = x * k;
 }
 
 task main()
@@ -82,10 +110,12 @@ task main()
 		getJoystickSettings(joystick);
 		drive(joystick.joy1_x1, joystick.joy1_y1, joystick.joy1_x2); // normal drive
 
-		if (joy2Btn(4))
-			raiseFeet();
-		if (joy2Btn(1))
-			dropFeet();
+		moveArm(joy1Btn(6), joy1Btn(5));
+
+		shooter(joy2Btn(2));
+
+		servo_up(joy2Btn(4)); //raise hook
+		servo_down(joy2Btn(1)); //lower hook
 
 		if (bigGateButtonCooldown <= 0) {
 			if (joy2Btn(3)) {
