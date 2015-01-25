@@ -38,11 +38,6 @@ int motorScale(float x)
 	return x;
 }
 
-/*int scaleInput(float initVal, float initMax, float finMax)
-{
-	return ((initVal/initMax)*finMax);
-}*/
-
 void drive(int x, int y, int r)
 {
 	float k = 1.0;
@@ -65,77 +60,40 @@ void drive(int x, int y, int r)
 	motor[FRWheelMotor] = FRPower;
 }
 
-void servoDown (int btn_x)
+void servoDown ()
 {
-	int hookUpRight = 31;	// smaller value is more down
+	int hookUpRight = 53;	// smaller value is more down, default was 31
 	int hookUp = 248 - hookUpRight;
 
-	if (btn_x == 1)
-	{
-		servo[leftHook] = hookUp;
-		servo[rightHook] = hookUpRight;
-	}
+	servo[leftHook] = hookUp;
+	servo[rightHook] = hookUpRight;
 }
 
-void servoUp (int btn_x)
+void servoUp ()
 {
 	int HookDownRight = 250; // greater value is more up
 	int HookDown = 244 - HookDownRight;
 
-	if (btn_x == 1)
-	{
-		servo[leftHook] = HookDown;
-		servo[rightHook] = HookDownRight;
-	}
+	servo[leftHook] = HookDown;
+	servo[rightHook] = HookDownRight;
 }
-
-/*
-void raiseFeet()
-{
-	int hookUpRight = 100;	// smaller value is more up
-	int hookUp = 250 - hookUpRight;
-
-	servo[leftFoot] = hookUp;
-	servo[rightFoot] = hookUpRight;
-}
-
-void dropFeet()
-{
-	int HookDownRight = 240; // greater value is more down
-	int HookDown = 250 - HookDownRight;
-
-	servo[leftFoot] = HookDown;
-	servo[rightFoot] = HookDownRight;
-}
-
-void moveProngs(int x)
-{
-	servo[leftProng] = 127+x;
-	servo[rightProng] = 127-x;
-}
-
-void moveWinch(int x)
-{
-	motor[winchMotor] = motorScale(x);
-}
-*/
 
 task main()
 {
-	waitForStart();   // wait for start of tele-op phase
 	//initializeRobot();
-	while (true)
-	{
-		getJoystickSettings(joystick);
+	waitForStart();
+	drive(90, 90, 0);
+	wait1Msec(2100);
+	drive(0, 100, 0);
+	servoUp();
+	wait1Msec(2830);
+	servoDown();
+	wait1Msec(450);
+	drive(0, 0, 30);
+	wait1Msec(220);
+	drive(0, -100, 0);
+	wait1Msec(4220);
+	drive(-20, 0, -100);
+	wait1Msec(1100);
 
-		drive(deadband(joystick.joy1_x1), deadband(joystick.joy1_y1), deadband(joystick.joy1_x2)); // normal drive
-
-		/*
-		moveWinch(deadband(joystick.joy2_y1));
-		moveProngs(deadband(joystick.joy2_y2));
-		*/
-
-		servoUp(joy1Btn(4));
-		servoDown(joy1Btn(1));
-	}
 }

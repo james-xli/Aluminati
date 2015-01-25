@@ -38,11 +38,6 @@ int motorScale(float x)
 	return x;
 }
 
-/*int scaleInput(float initVal, float initMax, float finMax)
-{
-	return ((initVal/initMax)*finMax);
-}*/
-
 void drive(int x, int y, int r)
 {
 	float k = 1.0;
@@ -65,77 +60,39 @@ void drive(int x, int y, int r)
 	motor[FRWheelMotor] = FRPower;
 }
 
-void servoDown (int btn_x)
+void servoDown ()
 {
-	int hookUpRight = 31;	// smaller value is more down
+	int hookUpRight = 53;	// smaller value is more down, default was 31
 	int hookUp = 248 - hookUpRight;
 
-	if (btn_x == 1)
-	{
-		servo[leftHook] = hookUp;
-		servo[rightHook] = hookUpRight;
-	}
+	servo[leftHook] = hookUp;
+	servo[rightHook] = hookUpRight;
 }
 
-void servoUp (int btn_x)
+void servoUp ()
 {
 	int HookDownRight = 250; // greater value is more up
 	int HookDown = 244 - HookDownRight;
 
-	if (btn_x == 1)
-	{
-		servo[leftHook] = HookDown;
-		servo[rightHook] = HookDownRight;
-	}
+	servo[leftHook] = HookDown;
+	servo[rightHook] = HookDownRight;
 }
-
-/*
-void raiseFeet()
-{
-	int hookUpRight = 100;	// smaller value is more up
-	int hookUp = 250 - hookUpRight;
-
-	servo[leftFoot] = hookUp;
-	servo[rightFoot] = hookUpRight;
-}
-
-void dropFeet()
-{
-	int HookDownRight = 240; // greater value is more down
-	int HookDown = 250 - HookDownRight;
-
-	servo[leftFoot] = HookDown;
-	servo[rightFoot] = HookDownRight;
-}
-
-void moveProngs(int x)
-{
-	servo[leftProng] = 127+x;
-	servo[rightProng] = 127-x;
-}
-
-void moveWinch(int x)
-{
-	motor[winchMotor] = motorScale(x);
-}
-*/
 
 task main()
 {
-	waitForStart();   // wait for start of tele-op phase
 	//initializeRobot();
-	while (true)
-	{
-		getJoystickSettings(joystick);
-
-		drive(deadband(joystick.joy1_x1), deadband(joystick.joy1_y1), deadband(joystick.joy1_x2)); // normal drive
-
-		/*
-		moveWinch(deadband(joystick.joy2_y1));
-		moveProngs(deadband(joystick.joy2_y2));
-		*/
-
-		servoUp(joy1Btn(4));
-		servoDown(joy1Btn(1));
-	}
+	waitForStart();
+	drive(0, 100, 0);		// drive forward off ramp
+	servoUp();					// talons up
+	wait1Msec(2950);
+	servoDown();				// talons down
+	wait1Msec(450);
+	drive(-50, -35, 75);// spin around goal
+	wait1Msec(1250);
+	drive(75, 20, 75);	// spin even harder
+	wait1Msec(1200);
+	drive(50, 100, 40);	// spin less drive more
+	wait1Msec(3000);
+	drive(0, 100, 0);		// drive those last couple feet
+	wait1Msec(650);
 }
