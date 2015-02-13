@@ -170,8 +170,9 @@ void holoMove(float x, float y, float rotateX) {
 	float rightOriWheel;
 
 	// Movement
-	leftOriWheel	= getMotorPower(getAngle(x, y), LEFT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
-	rightOriWheel	= getMotorPower(getAngle(x, y), RIGHT_ORIENTATION_HOLO_WHEEL) * getPower(x, y);
+	float power = getPower(x, y);
+	leftOriWheel	= getMotorPower(getAngle(x, y), LEFT_ORIENTATION_HOLO_WHEEL) * power;
+	rightOriWheel	= getMotorPower(getAngle(x, y), RIGHT_ORIENTATION_HOLO_WHEEL) * power;
 
 	motor[FLWheel] = (int) (((((rightOriWheel/100)*FULL_MOTOR_POWER)	+	rotateX)/200)*100);
 	motor[FRWheel] = (int) (((((leftOriWheel/100)*FULL_MOTOR_POWER)		+	-rotateX)/200)*100);
