@@ -12,13 +12,13 @@
 #pragma config(Motor,  mtr_S2_C1_2,     Shooter,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_1,     RLinear,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S2_C2_2,     BRWheelMotor,  tmotorTetrix, openLoop, reversed)
-#pragma config(Servo,  srvo_S1_C1_1,    servo1,               tServoNone)
+#pragma config(Servo,  srvo_S1_C1_1,    LTalon,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C1_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C1_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C1_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C1_6,    servo6,               tServoNone)
-#pragma config(Servo,  srvo_S1_C4_1,    servo7,               tServoNone)
+#pragma config(Servo,  srvo_S1_C4_1,    RTalon,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C4_2,    servo8,               tServoNone)
 #pragma config(Servo,  srvo_S1_C4_3,    servo9,               tServoNone)
 #pragma config(Servo,  srvo_S1_C4_4,    servo10,              tServoNone)
@@ -72,20 +72,20 @@ void drive(int x, int y, int r)
 
 void dropTalons ()
 {
-	int hookUpRight = 31;	// smaller value is more down
-	int hookUp = 248 - hookUpRight;
+	int RTalon = 31;	// smaller value is more down
+	int LTalon = 248 - RTalon;
 
-	servo[leftHook] = hookUp;
-	servo[rightHook] = hookUpRight;
+	servo[LTalon] = LTalon;
+	servo[RTalon] = RTalon;
 }
 
 void liftTalons ()
 {
-	int HookDownRight = 250; // greater value is more up
-	int HookDown = 244 - HookDownRight;
+	int RTalon = 250;  // greater value is more up
+	int LTalon = 244 - RTalon;
 
-	servo[leftHook] = HookDown;
-	servo[rightHook] = HookDownRight;
+	servo[LTalon] = LTalon;
+	servo[RTalon] = RTalon;
 }
 
 bool checkDistance() // Check to see if robot is facing center goal.
@@ -95,22 +95,22 @@ bool checkDistance() // Check to see if robot is facing center goal.
 
 void openBallGate()
 {
-	
+
 }
 
 void closeBallGate()
 {
-	
+
 }
 
-void setHoodHeight()
+void setHoodHeight(int height) // height in centimeters
 {
-	
+
 }
 
 void centerRobotGoal()
 {
-	
+
 }
 
 task main()
@@ -119,7 +119,7 @@ task main()
 	//initializeRobot();
 
 	drive(0, 100, 0); // drive forward
-	wait1ms(250);
+	wait1Msec(250);
 	drive(0, 0, 0); // stop robot
 	if (checkDistance()) // check if goal is in first position
 	{
@@ -130,9 +130,9 @@ task main()
 	else
 	{
 		drive(100, 0, 50); // Drive in Circle
-		wait1ms(250);
-		drive(0, 0, 0) // stop robot
-		
+		wait1Msec(250);
+		drive(0, 0, 0); // stop robot
+
 		if (checkDistance()) // check if goal is in second position
 		{
 			centerRobotGoal(); // *OPTIONAL* make sure robot is centered with the goal
@@ -142,9 +142,9 @@ task main()
 		else
 		{
 			drive(100, 0, 50); // Drive in Circle
-			wait1ms(250);
-			drive(0, 0, 0) // stop robot
-			
+			wait1Msec(250);
+			drive(0, 0, 0); // stop robot
+
 			if (checkDistance()) // check if goal is in third position
 			{
 				centerRobotGoal(); // *OPTIONAL* make sure robot is centered with the goal
@@ -153,5 +153,5 @@ task main()
 			}
 		}
 	}
-	
+
 }
