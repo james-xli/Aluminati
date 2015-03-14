@@ -1,5 +1,6 @@
 #pragma config(Hubs,  S1, HTServo,  HTMotor,  HTMotor,  HTServo)
 #pragma config(Hubs,  S2, HTMotor,  HTMotor,  none,     none)
+#pragma config(Sensor, S4,     ultrasonic,     sensorSONAR)
 #pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
@@ -27,11 +28,9 @@
 
 #include "JoystickDriver.c"
 
-bool brushToggle;
-
 void initializeRobot()
 {
-	brushToggle = false;
+
 }
 
 int deadband(int x)
@@ -49,11 +48,6 @@ int motorScale(float x)
 	return x;
 }
 
-/*int scaleInput(float initVal, float initMax, float finMax)
-{
-	return ((initVal/initMax)*finMax);
-}*/
-
 void drive(int x, int y, int r)
 {
 	float k = 1.0;
@@ -61,8 +55,8 @@ void drive(int x, int y, int r)
 
 	int xPower, yPower, rPower, FLPower, BLPower, BRPower, FRPower;
 
-	xPower = k 	* motorScale(x);
-	yPower = k 	* motorScale(y);
+	xPower = -k 	* motorScale(x);
+	yPower = -k 	* motorScale(y);
 	rPower = kR	* motorScale(r);
 
 	FLPower = motorScale(		xPower	+	yPower	+	rPower);
@@ -76,131 +70,39 @@ void drive(int x, int y, int r)
 	motor[FRWheelMotor] = FRPower;
 }
 
-void dropTalons()
+void dropTalons ()
 {
-	int rightVal = 53;	// smaller value is more down
-	int leftVal = 248 - rightVal;
-	servo[LTalon] = leftVal;
-	servo[RTalon] = rightVal;
+	int RTalon = 53;	// smaller value is more down
+	int LTalon = 248 - RTalon;
+
+	servo[LTalon] = LTalon;
+	servo[RTalon] = RTalon;
 }
 
-void liftTalons()
+void liftTalons ()
 {
-	int rightVal = 250; // greater value is more up
-	int leftVal = 244 - rightVal;
-	servo[LTalon] = leftVal;
-	servo[RTalon] = rightVal;
-}
+	int RTalon = 250;  // greater value is more up
+	int LTalon = 244 - RTalon;
 
-void liftHood()
-{
-	int positionLeft = 90; // smaller value is more up (78)
-	int positionRight = 255 - positionLeft;
-	int positionLeftMid = 180;
-	int positionRightMid = 255 - positionLeftMid;
-	servoChangeRate[BLHoodLeg] = 3;
-	servoChangeRate[BRHoodLeg] = 3;
-	servoChangeRate[FLHoodLeg] = 2;
-	servoChangeRate[FRHoodLeg] = 2;
-	servo[BLHoodLeg] = positionRightMid; // offset was -59
-	servo[BRHoodLeg] = positionRightMid;
-	servo[FLHoodLeg] = positionLeftMid;
-	servo[FRHoodLeg] = positionRightMid;
-	wait1Msec(750);
-	servo[BLHoodLeg] = positionRight - 96;
-	servo[BRHoodLeg] = positionRight;
-	wait1Msec(750);
-	servo[FLHoodLeg] = positionLeft;
-	servo[FRHoodLeg] = positionRight;
-	//wait1Msec(1000);
-	//servo[FLHoodLeg] = positionLeft;
-	//servo[FRHoodLeg] = positionRight;
-
-}
-
-void dropHood()
-{
-	servo[BLHoodLeg] = 255 - 20;
-	servo[BRHoodLeg] = 20;
-	servo[FLHoodLeg] = 20;
-	servo[FRHoodLeg] = 20;
-}
-
-void openGate()
-{
-	servo[gate] = 115;
-}
-
-void closeGate()
-{
-	servo[gate] = 155;
-}
-void manualLiftSlide(int x, int y)
-{
-	float k = 0.5;
-
-	motor[LLinear] = k * motorScale(y);
-	motor[RLinear] = -1 * k * motorScale(x);
+	servo[LTalon] = LTalon;
+	servo[RTalon] = RTalon;
 }
 
 task main()
 {
-	waitForStart();   // wait for start of tele-op phase
-	// initializeRobot();
-	while (true)
-	{
-		getJoystickSettings(joystick); // update joystick input
-
-		drive(deadband(joystick.joy1_x1), deadband(joystick.joy1_y1), deadband(joystick.joy1_x2)); // normal drive
-		manualLiftSlide(deadband(joystick.joy2_y1), deadband(joystick.joy2_y2));
-
-		if (joy1Btn(4) == 1) {
-			liftTalons();
-		}
-		if (joy1Btn(1) == 1) {
-			dropTalons();
-		}
-
-		if (joy2Btn(3) == 1)
-			liftHood();
-
-		if (joy2Btn(2) == 1)
-			dropHood();
-
-		if (joy2Btn(6) == 1)
-			openGate();
-
-		if (joy2Btn(5) == 1)
-			closeGate();
-
-		//if (joy2Btn(8))
-		//{
-		//	while (joy2Btn(8)) // Wait while pressed
-		//	{
-		//		getJoystickSettings(joystick);
-		//	}
-		//	if (brushToggle)
-		//		brushToggle = false;
-		//	else
-		//		brushToggle = true;
-		//}
-
-		//if (brushToggle)
-		//	motor[Brush] = 90;
-		//else
-		//	motor[Brush] = 0;
-
-		if (joy1Btn(5))
-			motor[Brush] = 75;
-
-		if (joy1Btn(6))
-			motor[Brush] = 0;
-
-		if (joy2Btn(1))
-			motor[Shooter] = -90;
-		else
-			motor[Shooter] = 0;
-		// ball shooting
-		//if (ServoValue[])
-	}
+	//initializeRobot();
+	waitForStart();
+	drive(0, 100, 0);		// drive forward off ramp
+	liftTalons();			// talons up
+	wait1Msec(2950);
+	dropTalons();			// talons down
+	wait1Msec(450);
+	drive(-50, -35, 75);	// spin around goal
+	wait1Msec(1250);
+	drive(75, 20, 75);		// spin even harder
+	wait1Msec(1200);
+	drive(50, 100, 40);		// spin less drive more
+	wait1Msec(3000);
+	drive(0, 100, 0);		// drive those last couple feet
+	wait1Msec(650);
 }
