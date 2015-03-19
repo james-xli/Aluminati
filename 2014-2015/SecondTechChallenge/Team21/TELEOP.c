@@ -14,11 +14,31 @@
 
 #include "JoystickDriver.c"
 
-void hookDown (){
+void hookDown ()
+{
 	servo[servoHook] = 255;
 }
-void hookUp (){
+void hookUp ()
+{
 	servo[servoHook] = 0;
+}
+
+void intake ()
+{
+	motor[motorIntake] = 100;
+}
+
+void arm (int z)
+{
+	motor[motorArm] = ((z*50)/128);
+}
+
+void drive (int x ,int y)
+{
+	int leftDrive = ((x*100)/128)+((y*100)/128);
+	int rightDrive = ((y*100)/128)-((x*100)/128);
+	motor[motorLeftWs] = -1 * rightDrive;
+	motor[motorRightWs] = -1 * leftDrive;
 }
 
 task main()
@@ -29,6 +49,41 @@ task main()
 
 		if (joy1Btn(4)==1)
 			hookDown();
+		if (joy1Btn(3)==1)
+			hookUp();
+
+		if (joy1Btn(2)==1)
+		{
+			if (abs(joystick.joy1_y2)>0)
+				motor[motorIntake]=0;
+			else
+				intake();
+		}
+		else
+			motor[motorIntake]=0;
+
+		if (abs(joystick.joy1_y2)>0)
+		{
+			if ((joystick.joy1_y2)>0)
+			{
+				arm(joystick.joy1_y2);
+				motor[motorIntake] = 25;
+			}
+			else if ((joystick.joy1_y2)<0)
+			{
+				arm(joystick.joy1_y2);
+				motor[motorIntake] = -25;
+			}
+		}
+
+		drive(-joystick.joy1_y1, joystick.joy1_x1);
+		arm(joystick.joy1_x2);
+
+		//motor[motorArm] = joystick.joy1_x1;
+
+		writeDebugStreamLine("joystick x is: %d", joystick.joy1_y2);
+
+
 
 	}
 }
