@@ -22,6 +22,34 @@ void intakeButton (int a)
 		motor[intake]=0;
 }
 
+
+int deadband (int b) //deadband (writeDebugStreamLine)
+{
+	if (b >= -5 && b <= 5)
+	{
+		b=0;
+	}
+	return b;
+}
+
+
+float motorScale (int c)
+{
+	int d;
+	d = (float)(100*c)/128;
+	return d;
+}
+
+
+void motorDrive (int x, int y)
+	{
+		x = motorScale(x);
+		y = motorScale(y);
+		motor[leftDrive]	= y + x;
+		motor[rightDrive]	= y - x;
+	}
+
+
 task main()
 {
 	while (true)
@@ -29,6 +57,9 @@ task main()
 			getJoystickSettings(joystick);
 
 			intakeButton(joy1Btn(1));
+
+			motorDrive(deadband(joystick.joy1_x1),deadband(joystick.joy1_y1));
+
 	}
 
 
