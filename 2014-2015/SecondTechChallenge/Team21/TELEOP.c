@@ -20,7 +20,7 @@ void hookDown ()
 }
 void hookUp ()
 {
-	servo[servoHook] = 19;
+	servo[servoHook] = 0;
 }
 
 void intake ()
@@ -30,7 +30,7 @@ void intake ()
 
 void arm (int z)
 {
-	motor[motorArm] = ((z*10)/128);
+	motor[motorArm] = ((z*100)/128);
 }
 
 void drive (int x ,int y)
