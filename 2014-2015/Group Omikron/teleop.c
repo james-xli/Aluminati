@@ -4,7 +4,7 @@
 #pragma config(Motor,  mtr_S1_C2_2,     motorE,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     leftDrive,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_2,     intake,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C1_1,    servo1,               tServoNone)
+#pragma config(Servo,  srvo_S1_C1_1,    leftTalon,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_2,    rightTalon,           tServoStandard)
 #pragma config(Servo,  srvo_S1_C1_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C1_4,    servo4,               tServoNone)
@@ -49,6 +49,19 @@ void motorDrive (int x, int y)
 		motor[rightDrive]	= y - x;
 	}
 
+void talons (int a, int b)
+	{
+	if (a== 1)
+	{
+		servo[rightTalon] = 215;
+		servo[leftTalon] = 45;
+	}
+	else if (b== 1)
+	{
+		servo[rightTalon] = 90;
+		servo[leftTalon] = 180;
+	}
+	}
 
 task main()
 {
@@ -59,6 +72,8 @@ task main()
 			intakeButton(joy1Btn(1));
 
 			motorDrive(deadband(joystick.joy1_x1),deadband(joystick.joy1_y1));
+
+			talons(joy1Btn(6), joy1Btn(5));
 
 	}
 
