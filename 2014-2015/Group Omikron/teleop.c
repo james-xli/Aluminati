@@ -73,7 +73,7 @@ task main()
 
 			motorDrive(deadband(joystick.joy1_x1),deadband(joystick.joy1_y1));
 
-			talons(joy1Btn(6), joy1Btn(5));
+			talons(joy1Btn(5), joy1Btn(6));
 
 	}
 
