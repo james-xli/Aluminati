@@ -35,10 +35,13 @@ void arm (int z)
 
 void drive (int x ,int y)
 {
+	if (abs(x) > 10 && abs(y) >10)
+		{
 	int leftDrive = ((x*100)/128)+((y*100)/128);
 	int rightDrive = ((y*100)/128)-((x*100)/128);
 	motor[motorLeftWs] = -1 * rightDrive;
 	motor[motorRightWs] = -1 * leftDrive;
+}
 }
 
 task main()
@@ -89,3 +92,4 @@ task main()
 
 	}
 }
+//there is a problem with the driving part, lagging and then nonstop driving after. MUST FIX!!
