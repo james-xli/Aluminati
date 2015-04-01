@@ -71,12 +71,12 @@ task main()
 
 		if (abs(joystick.joy1_x2)>10)
 		{
-			if ((joystick.joy1_x2)>0)
+			if ((joystick.joy1_x2)>10)
 			{
 				arm(joystick.joy1_x2);
 				motor[motorIntake] = 40;
 			}
-			else if ((joystick.joy1_x2)<0)
+			else if ((joystick.joy1_x2)<-10)
 			{
 				arm(joystick.joy1_x2);
 				motor[motorIntake] = -40;

@@ -14,29 +14,20 @@
 
 task main()
 {
-	motor[motorBRightWs] = 75;
+	motor[motorBRightWs] = -75;
 	motor[motorBLeftWs] = 75;
 	wait1Msec(1000);
-	motor[motorBRightWs] = 60;
+	motor[motorBRightWs] = 0;
+	motor[motorBLeftWs] = -75;
+	wait1Msec(1000);
+	motor[motorBRightWs] = -75;
 	motor[motorBLeftWs] = 75;
-	black = 11;
-	white = 99;`
-	loops = 0
-	midpoint = ( white + black ) / 2;
-	while (loops < 10000000)
-	{
-		value = SensorValue(sensorLight);
-		if value > midpoint
-		{
-			motor[motorBRightWs] = 75;
-			motor[motorBLeftWs] = 60;
-		}
-		else if value < midpoint
-		{
-			motor[motorBLeftWs] = 75;
-			motor[motorBRightWs] = 60;
-		}
-		loops++;
-	}
+	wait1Msec(1725);
+	motor[motorBRightWs] = 75;
+	motor[motorBLeftWs] = 0;
+	wait1Msec(1000);
+	motor[motorBRightWs] = -75;
+	motor[motorBLeftWs] = 75;
+	wait1Msec(3000);
 
-}
+	}
