@@ -14,12 +14,14 @@
 
 #include "JoystickDriver.c"
 
-void intakeButton (int a)
+void intakeButton (int a, int b)
 {
-	if (a ==	1)
-		motor[intake]=100;
+	if (a == 1)
+		motor[intake] = 100;
+	else if (b == 1)
+		motor[intake] = -100;
 	else
-		motor[intake]=0;
+		motor[intake] = 0;
 }
 
 
@@ -69,7 +71,7 @@ task main()
 	{
 			getJoystickSettings(joystick);
 
-			intakeButton(joy1Btn(1));
+			intakeButton(joy1Btn(1), joy1Btn(3));
 
 			motorDrive(deadband(joystick.joy1_x1),deadband(joystick.joy1_y1));
 

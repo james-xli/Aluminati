@@ -1,5 +1,7 @@
-#pragma config(Hubs,   S1, HTServo,  HTMotor,  HTMotor,  none)
-#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Hubs,  S1, HTServo,  HTMotor,  HTMotor,  none)
+#pragma config(Sensor, S2,     LightA,         sensorLightActive)
+#pragma config(Sensor, S3,     Ultra,          sensorSONAR)
+#pragma config(Sensor, S4,     LightB,         sensorLightActive)
 #pragma config(Motor,  mtr_S1_C2_1,     rightDrive,    tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     motorE,        tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     leftDrive,     tmotorTetrix, openLoop, reversed)
@@ -77,46 +79,51 @@ task main()
   initializeRobot();
  waitForStart();
 
- //write code for going from back wall to box
+//use ultra to find the box
+//if not the box, use second light sensor to follow
+//drive to the other side
 
-	 while (SensorValue(LightSensor) <= 60 )
+ 	while (SensorValue(LightA) <= 60 ) //write code for going from back wall to stopping line thingy
   		motorDrive(-90,-90);
 
- 	while (SensorValue(Ultra) > 43.5)
+ 	while (SensorValue(LightB) < 60)
 	{
-		if(SensorValue(LightSensor) > 60)
+		if(SensorValue(LightA) > 60)
 		{
-
 			motor[leftDrive] = -25;
 			motor[rightDrive] = 0;
-
 		}
-
-		else if(SensorValue(LightSensor) <= 60)
+		else if(SensorValue(LightA) <= 60)
 		{
 			motor[leftDrive] = 0;
 			motor[rightDrive] = -25;
 		}
 	}
 
-
-
-	  	if (SensorValue[ultra] <= 43.5 ) //43.5 is a tentative value; it depends on when we want to start the ultra code
+	if (SensorValue[LightB] > 60)
   	{
-  		motorDrive(0,-128);
-  		wait1Msec();
+  		if (SensorValue[Ultra] <= 43.5 )
+  		{
+  			motorDrive (0,-128);
+  			while (SensorValue[Ultra] > 0 )
+  		}
 	}
 
-  	else if (SensorValue[ultra] >= 43.5)
+  	else if (SensorValue[Ultra] >= 43.5)
   	{
-  		motorDrive(-128,0);
-  		wait1Msec();
-  		motorDrive(0,-128);
-  		wait1Msec();
-  		motorDrive(128,0);
-  		wait1Msec();
-  		motorDrive(0,-128);
-  		wait1Msec();
+		if(SensorValue(LightA) > 60)
+		{
+			motor[leftDrive] = -25;
+			motor[rightDrive] = 0;
+		}
+
+		else if(SensorValue(LightA) <= 60)
+		{
+			motor[leftDrive] = 0;
+			motor[rightDrive] = -25;
+		}
+	}
+
 	}
 
   		intakeButton(1);
