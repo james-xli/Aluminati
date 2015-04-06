@@ -14,20 +14,21 @@
 
 task main()
 {
-	motor[motorBRightWs] = -75;
-	motor[motorBLeftWs] = 75;
+	n = 75
+	motor[motorBRightWs] = -n;
+	motor[motorBLeftWs] = n;
 	wait1Msec(1000);
 	motor[motorBRightWs] = 0;
-	motor[motorBLeftWs] = -75;
+	motor[motorBLeftWs] = -n;
 	wait1Msec(1000);
-	motor[motorBRightWs] = -75;
-	motor[motorBLeftWs] = 75;
+	motor[motorBRightWs] = -n;
+	motor[motorBLeftWs] = n;
 	wait1Msec(1725);
-	motor[motorBRightWs] = 75;
+	motor[motorBRightWs] = n;
 	motor[motorBLeftWs] = 0;
 	wait1Msec(1000);
-	motor[motorBRightWs] = -75;
-	motor[motorBLeftWs] = 75;
+	motor[motorBRightWs] = -n;
+	motor[motorBLeftWs] = n;
 	wait1Msec(3000);
 
 	}

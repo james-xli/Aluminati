@@ -19,11 +19,6 @@ void intake ()
 	motor[motorIntake] = 100;
 }
 
-void arm (int z)
-{
-	motor[motorArm] = ((z*100)/128);
-}
-
 int deadband(int x)
 {
 	if (x < 10 && x > -10)
@@ -51,7 +46,7 @@ task main()
 
 		if (joy1Btn(4)==1)
 		{
-			servo[servoHook] = 240;
+			servo[servoHook] = 130;
 			writeDebugStreamLine("hook down");
 		}
 		else if (joy1Btn(3)==1)
@@ -69,21 +64,6 @@ task main()
 		else
 			motor[motorIntake]=0;
 
-		if (abs(joystick.joy1_x2)>10)
-		{
-			if ((joystick.joy1_x2)>10)
-			{
-				arm(joystick.joy1_x2);
-				motor[motorIntake] = 40;
-			}
-			else if ((joystick.joy1_x2)<-10)
-			{
-				arm(joystick.joy1_x2);
-				motor[motorIntake] = -40;
-			}
-		}
-		else
-			motor[motorArm] = 0;
 
 		drive(-1*joystick.joy1_y1, joystick.joy1_x1);
 
