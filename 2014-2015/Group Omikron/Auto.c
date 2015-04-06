@@ -76,17 +76,14 @@ void initializeRobot()
 
 task main()
 {
-  initializeRobot();
- waitForStart();
+	initializeRobot();
+	waitForStart();
 
-//use ultra to find the box
-//if not the box, use second light sensor to follow
-//drive to the other side
 
- 	while (SensorValue(LightA) <= 60 ) //write code for going from back wall to stopping line thingy
+ 	while (SensorValue(LightA) <= 60 ) 					//robot travels diagonally to first line
   		motorDrive(-90,-90);
 
- 	while (SensorValue(LightB) < 60)
+	while (SensorValue(LightB) < 60)
 	{
 		if(SensorValue(LightA) > 60)
 		{
@@ -99,23 +96,28 @@ task main()
 			motor[rightDrive] = -25;
 		}
 	}
-
-	if (SensorValue[LightB] > 60)
-  	{
-  		if (SensorValue[Ultra] <= 43.5 )
-  		{
-  			motorDrive (0,-128);
-  			while (SensorValue[Ultra] > 0 )
-  		}
+													//robot will follow white line until stopping point
+													//robot senses stopping point
+ 	if (SensorValue[Ultra] <= 43.5 )				//if robot senses the box, enter clamping mode
+	{
+		while (SensorValue[Ultra] < 100 )
+		{
+			motorDrive(-90,-90);
+		}
+		motorDrive(0,-128);
+		wait1Msec(1500);
+		motorDrive(0,0);
+		talons(1,0);								//hopefully this is talons down
 	}
-
-  	else if (SensorValue[Ultra] >= 43.5)
-  	{
+	else if (SensorValue[Ultra] >= 43.5)				//if robot does not sense the box, turn until lightA senses second line
+	{
 		if(SensorValue(LightA) > 60)
 		{
 			motor[leftDrive] = -25;
 			motor[rightDrive] = 0;
 		}
+		else if(SensorValue(LightA) < 60)
+			motorDrive(90,-90);
 
 		else if(SensorValue(LightA) <= 60)
 		{
@@ -123,14 +125,17 @@ task main()
 			motor[rightDrive] = -25;
 		}
 	}
+														//robot follows line until second stopping point (stops when lightB senses line)
+														//robot turns until ultra faces the box
+														//robot senses box and repositions itself to allow bot to clamp down on box
+														//from wherever the robot is, drive forward (0,128) in order to return to our side
+	intakeButton(1);
+	wait1Msec(2000);
+	motorDrive(0,100);
+	wait1Msec(3000);
 
-	}
 
-  		intakeButton(1);
-  		wait1Msec(2000);
-  		motorDrive(0,100);
-  		wait1Msec(3000);
-
+}
   /*
   	motorDrive(0,-128);
  	wait1Msec(2000*x); //2000 with 4 v battery
@@ -172,6 +177,6 @@ task main()
   		wait1Msec(2000);
   		motorDrive(0,100);
   		wait1Msec();
-*/
+  		*/
 
-}
+  	}
