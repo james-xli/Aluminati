@@ -55,7 +55,7 @@ void talons (int a, int b)
 	{
 	if (a== 1)
 	{
-		servo[rightTalon] = 215;
+		servo[rightTalon] = 205;
 		servo[leftTalon] = 45;
 	}
 	else if (b== 1)
