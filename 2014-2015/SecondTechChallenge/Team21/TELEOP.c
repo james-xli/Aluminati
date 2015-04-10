@@ -46,23 +46,21 @@ task main()
 
 		if (joy1Btn(4)==1)
 		{
-			servo[servoHook] = 130;
+			servo[servoHook] = 100;
 			writeDebugStreamLine("hook down");
 		}
 		else if (joy1Btn(3)==1)
 		{
-			servo[servoHook] = 10;
-			writeDebugStreamLine("hook up");
-		}
-		if (joy1Btn(2)==1)
-		{
-			if (abs(joystick.joy1_y2)>10)
-				motor[motorIntake]=0;
-			else
-				intake();
-		}
+			servo[servoHook] = 35;
+			writeDebugStreamLine("hook up");}
+
+		if (joy1Btn(1) == 1)
+			motor[motorIntake]=-100;
+		else if (joy1Btn(2) == 1)
+			intake();
 		else
 			motor[motorIntake]=0;
+
 
 
 		drive(-1*joystick.joy1_y1, joystick.joy1_x1);
