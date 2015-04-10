@@ -56,7 +56,7 @@ void talons (int a, int b)
 	{
 	if (a== 1)
 	{
-		servo[rightTalon] = 215;
+		servo[rightTalon] = 205;
 		servo[leftTalon] = 45;
 	}
 	else if (b== 1)
@@ -80,103 +80,88 @@ task main()
 	waitForStart();
 
 
- 	while (SensorValue(LightA) <= 60 ) 					//robot travels diagonally to first line
-  		motorDrive(-90,-90);
+														//robot travels diagonally to first line
+  	//	motorDrive(-100,-110);
+	//PlayTone(500,    7);
 
-	while (SensorValue(LightB) < 60)
+	motorDrive(0,-128);
+	wait1Msec(1800);
+	motorDrive(-100,80);
+	wait1Msec(500);
+	while (SensorValue(LightA)<= 50)
+		motorDrive(0,40);
+
+	/*while (SensorValue(LightA) <= 50)
 	{
-		if(SensorValue(LightA) > 60)
+		motor[leftDrive] = -25;
+		motor[rightDrive] = 0;
+	}*/
+	while (SensorValue(LightB) < 50)
+	{
+		if(SensorValue(LightA) > 50)
 		{
 			motor[leftDrive] = -25;
 			motor[rightDrive] = 0;
 		}
-		else if(SensorValue(LightA) <= 60)
+		else if(SensorValue(LightA) <= 50)
 		{
 			motor[leftDrive] = 0;
 			motor[rightDrive] = -25;
 		}
 	}
+	//PlayTone(  0,    0);
 													//robot will follow white line until stopping point
 													//robot senses stopping point
- 	if (SensorValue[Ultra] <= 43.5 )				//if robot senses the box, enter clamping mode
+ 	if (SensorValue(Ultra) <= 30 )				//if robot senses the box, enter clamping mode
 	{
-		while (SensorValue[Ultra] < 100 )
-		{
-			motorDrive(-90,-90);
-		}
+		writeDebugStreamLine("IT WORKED");
+		motor[leftDrive] = 0;
+		motor[rightDrive] = -10;
+		wait1Msec(150);
 		motorDrive(0,-128);
-		wait1Msec(1500);
+		wait1Msec(1000);
 		motorDrive(0,0);
-		talons(1,0);								//hopefully this is talons down
+		talons(1,0);
+		intakeButton(1);
+		wait1Msec(2000);
+		motorDrive(0,128);
+		wait1Msec(3500);								//hopefully this is talons down
 	}
-	else if (SensorValue[Ultra] >= 43.5)				//if robot does not sense the box, turn until lightA senses second line
+	else if (SensorValue(Ultra) >= 30)				//if robot does not sense the box, turn until lightA senses second line
 	{
 		if(SensorValue(LightA) > 60)
-		{
-			motor[leftDrive] = -25;
-			motor[rightDrive] = 0;
-		}
+			motorDrive(-128,0);
 		else if(SensorValue(LightA) < 60)
-			motorDrive(90,-90);
+			motorDrive(-128,0);
+	}
 
-		else if(SensorValue(LightA) <= 60)
+		while (SensorValue(LightB) < 60)				//robot follows line until second stopping point (stops when lightB senses line)
 		{
-			motor[leftDrive] = 0;
-			motor[rightDrive] = -25;
+			if(SensorValue(LightA) > 60)
+			{
+				motor[leftDrive] = -25;
+				motor[rightDrive] = 0;
+			}
+			else if(SensorValue(LightA) <= 60)
+			{
+				motor[leftDrive] = 0;
+				motor[rightDrive] = -25;
+			}
 		}
-	}
-														//robot follows line until second stopping point (stops when lightB senses line)
-														//robot turns until ultra faces the box
-														//robot senses box and repositions itself to allow bot to clamp down on box
-														//from wherever the robot is, drive forward (0,128) in order to return to our side
-	intakeButton(1);
-	wait1Msec(2000);
-	motorDrive(0,100);
-	wait1Msec(3000);
+			if(SensorValue(LightB) > 60)				//doubt this is right
+				motorDrive(-128,0);
+			else if(SensorValue(LightB) <= 60)
+				motorDrive(-128,0);
 
+			while (SensorValue(Ultra) <= 43.5)
+				motorDrive(128,0); 						//turn ultra so it is right at the edge of the box?
 
+			motorDrive(0,-128);
+			wait1Msec(1500);
+			motorDrive(0,0);
+			talons(1,0);										//robot senses box and repositions itself to allow bot to clamp down on box
+			intakeButton(1);
+			wait1Msec(2000);
+			motorDrive(0,128);
+			wait1Msec(3500);
 }
-  /*
-  	motorDrive(0,-128);
- 	wait1Msec(2000*x); //2000 with 4 v battery
- 	motorDrive(128,0);
- 	wait1Msec(1350*x); //1350 with 4 v battery
- 	motorDrive(0,-128);
- 	wait1Msec(1200*x); //1000
- 	motorDrive(-128,0);
-  	wait1Msec(1200*x); //1230
-  	motorDrive(0,-128);
-  	wait1Msec(2600*x); //3500
-  	motorDrive(0,0);
-  	wait10Msec(0*x);
-  	talons(1,0);
-  	wait1Msec(1000*x); //1000
-  	intakeButton(1);
-  	wait1Msec(2000*x);
-
-  	if (SensorValue[ultra] <= && => )
-  	{
-  		motorDrive(0,-128);
-  		wait1Msec();
-
-	}
-  	else if (SensorValue[ultra] => )
-  	{
-  		motorDrive(-128,0);
-  		wait1Msec();
-  		motorDrive(0,-128);
-  		wait1Msec();
-  		motorDrive(128,0);
-  		wait1Msec();
-  		motorDrive(0,-128);
-  		wait1Msec();
-	}
-
-
-  		intakeButton(1);
-  		wait1Msec(2000);
-  		motorDrive(0,100);
-  		wait1Msec();
-  		*/
-
-  	}
